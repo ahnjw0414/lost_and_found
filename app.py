@@ -12,12 +12,19 @@ ADMIN_EMAILS = ['seohyohoon@ps.hs.kr', 'admin@test.com']
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///lost_found.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///lost_found.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+with app.app_context():
+    try:
+        db.create_all()
+        print("데이터베이스 테이블 생성 성공!")
+    except Exception as e:
+        print(f"테이블 생성 중 오류 발생: {e}")
 
 # 폴더 생성
 os.makedirs('static/uploads', exist_ok=True)
