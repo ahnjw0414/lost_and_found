@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h2 class="mb-4">🙋‍♂️ 내 신청 현황</h2>
+        <a href="/board" class="btn btn-secondary mb-3">게시판으로 돌아가기</a>
+        
+        <div class="card shadow-sm">
+            <div class="card-body p-0 table-responsive">
+                <table class="table table-hover align-middle text-center mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>사진</th>
+                            <th>설명</th>
+                            <th>수령 예정 시간</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for claim in claims %}
+                        <tr>
+                            <td><img src="{{ url_for('static', filename='uploads/' + item_dict[claim.item_id].image_path) }}" class="rounded" style="width: 80px; height: 80px; object-fit: cover;"></td>
+                            <td>{{ item_dict[claim.item_id].description }}</td>
+                            <td>{{ claim.pickup_time }}</td>
+                            <td>
+                                {% if claim.status == '대기중' %} <span class="badge bg-warning text-dark">선생님 확인 대기중 ⏳</span>
+                                {% elif claim.status == '승인됨' %} <span class="badge bg-success">승인 완료! 교무실로 오세요 ✅</span>
+                                {% else %} <span class="badge bg-secondary">수령 완료 🤝</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="py-4 text-muted">아직 신청한 분실물이 없습니다.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

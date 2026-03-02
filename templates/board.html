@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>분실물 게시판</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/board">🏫 교내 분실물 센터</a>
+            <div class="d-flex align-items-center">
+                <span class="text-light me-3">환영합니다, <strong>{{ current_user.name }}</strong>님!</span>
+                <a href="/notifications" class="btn btn-outline-light btn-sm me-2">
+                    알림 <span class="badge bg-danger">{{ unread_notifs }}</span>
+                </a>
+                <a href="/logout" class="btn btn-sm btn-secondary">로그아웃</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-7 mb-3 mb-md-0">
+                {% if current_user.email in admin_emails %}
+                    <a href="/add_item" class="btn btn-success me-1">➕ 등록(관리자)</a>
+                    <a href="/admin_dashboard" class="btn btn-warning text-dark me-1">📋 신청 내역</a>
+                    <a href="/admin_reports" class="btn btn-danger">💌 학생 제보 확인</a>
+                {% else %}
+                    <a href="/mypage" class="btn btn-info text-white me-2">🙋‍♂️ 마이페이지</a>
+                    <a href="/report" class="btn btn-secondary">📢 물건 제보하기</a>
+                {% endif %}
+            </div>
+            <div class="col-md-5">
+                <form action="/board" method="GET" class="d-flex">
+                    <select name="category" class="form-select me-2" style="width: auto;">
+                        <option value="전체" {% if category == '전체' %}selected{% endif %}>전체</option>
+                        <option value="전자기기" {% if category == '전자기기' %}selected{% endif %}>전자기기</option>
+                        <option value="의류" {% if category == '의류' %}selected{% endif %}>의류</option>
+                        <option value="지갑/카드" {% if category == '지갑/카드' %}selected{% endif %}>지갑/카드</option>
+                        <option value="기타" {% if category == '기타' %}selected{% endif %}>기타</option>
+                    </select>
+                    <input type="text" name="q" class="form-control me-2" placeholder="분실물 검색..." value="{{ search_word }}">
+                    <button type="submit" class="btn btn-primary">검색</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-4 g-4 mb-5">
+            {% for item in items %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="{{ url_for('static', filename='uploads/' + item.image_path) }}" class="card-img-top" alt="분실물 이미지" style="height: 200px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column">
+                        <span class="badge bg-secondary mb-2" style="width: fit-content;">{{ item.category }}</span>
+                        <p class="card-text flex-grow-1">{{ item.description }}</p>
+                        <p class="text-muted small">등록일: {{ item.date_posted.strftime('%Y-%m-%d') }}</p>
+                        
+                        <a href="/item/{{ item.id }}" class="btn btn-outline-dark w-100 mb-2">🔍 상세 보기 / 댓글 달기</a>
+                        
+                        {% if current_user.email in admin_emails %}
+                            <div class="d-flex gap-2">
+                                <a href="/edit_item/{{ item.id }}" class="btn btn-sm btn-outline-secondary w-50">수정</a>
+                                <form action="/delete_item/{{ item.id }}" method="POST" class="w-50" onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">삭제</button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <h5 class="text-muted">등록된 분실물이 없습니다.</h5>
+            </div>
+            {% endfor %}
+        </div>
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if pagination.has_prev %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('board', page=pagination.prev_num, q=search_word, category=category) }}">이전</a></li>
+                {% endif %}
+                
+                {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                        {% if pagination.page == page_num %}
+                            <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="{{ url_for('board', page=page_num, q=search_word, category=category) }}">{{ page_num }}</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if pagination.has_next %}
+                    <li class="page-item"><a class="page-link" href="{{ url_for('board', page=pagination.next_num, q=search_word, category=category) }}">다음</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>분실물 등록</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
+    <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
+        <h3 class="mb-4 text-center">➕ 분실물 등록하기</h3>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label fw-bold">카테고리 분류</label>
+                <select name="category" class="form-select" required>
+                    <option value="전자기기">전자기기 (스마트폰, 이어폰 등)</option>
+                    <option value="지갑/카드">지갑/카드 (학생증, 체크카드 등)</option>
+                    <option value="의류">의류 (체육복, 잠바 등)</option>
+                    <option value="기타" selected>기타 (필통, 우산 등)</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">특징 설명</label>
+                <textarea name="description" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold text-success">사진 업로드 (자동으로 용량이 압축됩니다!)</label>
+                <input type="file" name="image" class="form-control" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">등록 완료</button>
+        </form>
+        <div class="mt-3 text-center"><a href="/board" class="text-muted">취소하고 돌아가기</a></div>
+    </div>
+</body>
+</html>
